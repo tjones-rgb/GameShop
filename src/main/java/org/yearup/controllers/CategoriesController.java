@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/categpries")
+@RequestMapping("/categories")
 @CrossOrigin
 public class CategoriesController
 {
@@ -40,7 +40,7 @@ public class CategoriesController
     }
 
 
-    @GetMapping("{categoryId}/products")
+    @GetMapping("/{categoryId}/products")
     public List<Product> listByCategoryId(@PathVariable int categoryId)
     {
 
@@ -48,7 +48,7 @@ public class CategoriesController
     }
 
 
-    @GetMapping
+    @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public Category addCategory(@RequestBody Category category)
     {
@@ -58,7 +58,7 @@ public class CategoriesController
 
     // add annotation to call this method for a PUT (update) action - the url path must include the categoryId
     // add annotation to ensure that only an ADMIN can call this function
-    @GetMapping("/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void updateCategory(@PathVariable int id, @RequestBody Category category)
     {
