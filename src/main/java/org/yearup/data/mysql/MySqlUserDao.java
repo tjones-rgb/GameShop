@@ -20,7 +20,6 @@ public class MySqlUserDao extends MySqlDaoBase implements UserDao
         super(dataSource);
     }
 
-
     @Override
     public User create(User newUser)
     {
@@ -40,7 +39,32 @@ public class MySqlUserDao extends MySqlDaoBase implements UserDao
             user.setPassword("");
 
             return user;
+        }
+        catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
 
+    @Override
+    public void update(int userId, User user)
+    {
+        String sql = "UPDATE users SET username = ?, hashed_password = ?, role = ? WHERE user_id = ?";
+
+        String hashedPassword = user.getPassword();
+        if (hashedPassword != null && !hashedPassword.isEmpty()) {
+            hashedPassword = new BCryptPasswordEncoder().encode(hashedPassword);
+        }
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql))
+        {
+            statement.setString(1, user.getUsername());
+            statement.setString(2, hashedPassword);
+            statement.setString(3, user.getRole());
+            statement.setInt(4, userId);
+
+            statement.executeUpdate();
         }
         catch (SQLException e)
         {
@@ -113,7 +137,6 @@ public class MySqlUserDao extends MySqlDaoBase implements UserDao
             ResultSet row = statement.executeQuery();
             if(row.next())
             {
-
                 User user = mapRow(row);
                 return user;
             }
@@ -153,6 +176,6 @@ public class MySqlUserDao extends MySqlDaoBase implements UserDao
         String hashedPassword = row.getString("hashed_password");
         String role = row.getString("role");
 
-        return new User(userId, username,hashedPassword, role);
+        return new User(userId, username, hashedPassword, role);
     }
 }
