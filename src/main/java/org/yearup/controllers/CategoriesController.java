@@ -1,7 +1,9 @@
 package org.yearup.controllers;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.CategoryDao;
 import org.yearup.data.ProductDao;
 import org.yearup.models.Category;
@@ -33,13 +35,19 @@ public class CategoriesController
     }
 
    @GetMapping("/{id}")
-    public Category getById(@PathVariable int id)
-    {
+    public Category getById(@PathVariable int id) {
+       Category category = categoryDao.getById(id);
 
-        return categoryDao.getById(id);
-    }
+       if (category == null) {
+           throw new ResponseStatusException(
+                   HttpStatus.NOT_FOUND,
+                   "Category not found"
+           );
+       }
 
+       return category;
 
+   }
     @GetMapping("/{categoryId}/products")
     public List<Product> listByCategoryId(@PathVariable int categoryId)
     {
@@ -50,25 +58,33 @@ public class CategoriesController
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.CREATED)
     public Category addCategory(@RequestBody Category category)
     {
 
         return categoryDao.create(category);
     }
 
-    // add annotation to call this method for a PUT (update) action - the url path must include the categoryId
-    // add annotation to ensure that only an ADMIN can call this function
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void updateCategory(@PathVariable int id, @RequestBody Category category)
     {
-        categoryDao.update(id,category);
+        Category existing = categoryDao.getById(id);
+
+        if (existing == null)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
+        }
+
+        categoryDao.update(id, category);
     }
 
 
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable int id)
     {
 

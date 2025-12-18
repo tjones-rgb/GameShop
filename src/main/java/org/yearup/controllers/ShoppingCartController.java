@@ -53,7 +53,7 @@ public class ShoppingCartController {
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
 
-        ///    shoppingCartDao.addProductToCart(userId, productId);
+          shoppingCartDao.addProductToCart(userId, productId);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "cart failed to update.");
         }
@@ -65,7 +65,7 @@ public class ShoppingCartController {
                 String userName = principal.getName();
                 User user = userDao.getByUserName(userName);
                 int userId = user.getId();
-        //        shoppingCartDao.updateProductQuantity(userId, productId, item.getQuantity());
+               shoppingCartDao.updateProductQuantity(userId, productId, item.getQuantity());
 
             } catch (Exception e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "update failed");
@@ -81,7 +81,7 @@ public class ShoppingCartController {
                     String userName = principal.getName();
                     User user = userDao.getByUserName(userName);
                     int userId = user.getId();
-        //            shoppingCartDao.clearCart(userId);
+                 shoppingCartDao.clearCart(userId);
                 } catch (Exception e) {
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "clear cart failed");
                 }
